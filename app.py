@@ -158,27 +158,44 @@ else:
     # ------- [탭2] 이슈 등록 ---------
     with tab2:
         st.header("새 JIRA 이슈 등록")
-        st.info("프로젝트, 요약, 설명, 우선순위를 입력해 새 이슈를 생성합니다.")
-        # 프로젝트 선택 (간단히 프로젝트 키 수동입력, 추후 project_list API로 개선가능)
-        project_key = st.text_input("프로젝트 키 (예: TEST)")
+        st.info("프로젝트, 요약, 설명 입력 후 새 이슈를 생성합니다.")
+        # 프로젝트 리스트 조회 및 selectbox
+        try:
+            cli = st.session_state.jira_client
+            resp = cli.session.get(f"{cli.jira_url}/rest/api/3/project/search", timeout=10)
+            if resp.status_code != 200:
+                st.error("프로젝트 목록을 불러올 수 없습니다.")
+                project_key = None
+                project_choices = []
+            else:
+                proj_data = resp.json()
+                projects = proj_data.get("values", [])
+                project_choices = [(p["name"], p["key"]) for p in projects]
+                if not project_choices:
+                    st.error("접근 가능한 프로젝트가 없습니다.")
+                # selectbox: 프로젝트명 노출, key 저장
+                proj_disp = [f"{n} ({k})" for n,k in project_choices]
+                sel_idx = st.selectbox("프로젝트 선택", list(range(len(proj_disp))),
+                                      format_func=lambda i: proj_disp[i] if proj_disp else "없음") if project_choices else None
+                project_key = project_choices[sel_idx][1] if (project_choices and sel_idx is not None) else None
+        except Exception as e:
+            st.error(f"프로젝트 목록 조회오류: {e}")
+            project_key = None
+
         issue_summary = st.text_input("이슈 요약")
         issue_desc = st.text_area("이슈 설명")
-        priority = st.selectbox("우선순위 선택", ["Highest", "High", "Medium", "Low", "Lowest"])
         if st.button("이슈 생성"):
             if not (project_key and issue_summary):
-                st.warning("프로젝트 키와 요약은 필수입니다.")
+                st.warning("프로젝트와 요약은 필수입니다.")
             else:
-                # 이슈 생성 API 호출
                 try:
-                    cli = st.session_state.jira_client
                     url = f"{cli.jira_url}/rest/api/3/issue"
                     data = {
                         "fields": {
                             "project": {"key": project_key},
                             "summary": issue_summary,
                             "description": issue_desc,
-                            "issuetype": {"name": "Task"},
-                            "priority": {"name": priority}
+                            "issuetype": {"name": "Task"}
                         }
                     }
                     resp = cli.session.post(url, json=data, timeout=10)
