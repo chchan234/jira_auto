@@ -169,7 +169,7 @@ else:
                         st.error(str(e))
         else:
             st.info('먼저 "이슈 조회" 탭에서 프로젝트를 선택하고 이슈를 조회하세요!')
-    with tab2:
+    with tab_view[2]:
         st.header("새 JIRA 이슈 등록")
         st.info("프로젝트, 요약, 설명 입력 후 새 이슈를 생성합니다.")
         # 프로젝트 리스트 조회 및 selectbox
