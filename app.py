@@ -1,6 +1,8 @@
 
 
+
 from core.issue_manager import IssueManager
+from core.jira_client import JiraClient
 import streamlit as st
 
 st.set_page_config(page_title="JIRA Manager", layout="centered")
