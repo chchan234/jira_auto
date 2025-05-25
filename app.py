@@ -66,8 +66,11 @@ else:
                 if not project_choices:
                     st.error("접근 가능한 프로젝트가 없습니다.")
                 proj_disp = [f"{n} ({k})" for n,k in project_choices]
-                sel_idx = st.selectbox("프로젝트 선택", list(range(len(proj_disp))),
-                                      format_func=lambda i: proj_disp[i] if proj_disp else "없음") if project_choices else None
+                sel_idx = st.selectbox(
+                    "프로젝트 선택", list(range(len(proj_disp))),
+                    format_func=lambda i: proj_disp[i] if proj_disp else "없음",
+                    key="select_proj_조회"
+                ) if project_choices else None
                 project_key = project_choices[sel_idx][1] if (project_choices and sel_idx is not None) else None
         except Exception as e:
             st.error(f"프로젝트 목록 조회오류: {e}")
@@ -188,8 +191,11 @@ else:
                     st.error("접근 가능한 프로젝트가 없습니다.")
                 # selectbox: 프로젝트명 노출, key 저장
                 proj_disp = [f"{n} ({k})" for n,k in project_choices]
-                sel_idx = st.selectbox("프로젝트 선택", list(range(len(proj_disp))),
-                                      format_func=lambda i: proj_disp[i] if proj_disp else "없음") if project_choices else None
+                sel_idx = st.selectbox(
+                    "프로젝트 선택", list(range(len(proj_disp))),
+                    format_func=lambda i: proj_disp[i] if proj_disp else "없음",
+                    key="select_proj_등록"
+                ) if project_choices else None
                 project_key = project_choices[sel_idx][1] if (project_choices and sel_idx is not None) else None
         except Exception as e:
             st.error(f"프로젝트 목록 조회오류: {e}")
