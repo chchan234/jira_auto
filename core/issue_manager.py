@@ -1,4 +1,4 @@
-    @staticmethod
+ 
     def count_by_status(issues):
         """상태별 이슈 수 dict 반환"""
         from collections import Counter
