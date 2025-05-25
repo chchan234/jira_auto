@@ -190,11 +190,24 @@ else:
             else:
                 try:
                     url = f"{cli.jira_url}/rest/api/3/issue"
+                    # description을 Atlassian Document Format으로 포장
+                    desc_doc = {
+                        "type": "doc",
+                        "version": 1,
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {"type": "text", "text": issue_desc or " "}
+                                ]
+                            }
+                        ]
+                    }
                     data = {
                         "fields": {
                             "project": {"key": project_key},
                             "summary": issue_summary,
-                            "description": issue_desc,
+                            "description": desc_doc,
                             "issuetype": {"name": "Task"}
                         }
                     }
